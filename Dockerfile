@@ -8,8 +8,10 @@ ENV DEBIAN_FRONTEND="noninteractive" LC_ALL="C.UTF-8" LANG="en_US.UTF-8" LANGUAG
 # the ENV variabl should come from the gitlab runner config.toml file
 RUN if [ $HTTP_PROXY ]; then pear config-set http_proxy $HTTP_PROXY; fi
 
-# Locales
+# Locales + common
 RUN apt-get update && apt-get install -y \
+		openssl \
+		git \
 		locales \
 		libicu-dev \
 		&& dpkg-reconfigure locales \
@@ -21,14 +23,15 @@ RUN apt-get update && apt-get install -y \
 		&& docker-php-ext-install intl \
 && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /var/cache/*
 
-# Common
+# Composer + Deployer
 RUN apt-get update && apt-get install -y \
-		openssl \
-		git \
 		# Install composer and put binary into $PATH
         && curl -sS https://getcomposer.org/installer | php \
         && mv composer.phar /usr/local/bin/ \
         && ln -s /usr/local/bin/composer.phar /usr/local/bin/composer \
+        && curl -LO https://deployer.org/deployer.phar \
+        && mv deployer.phar /usr/local/bin/dep \
+        && chmod +x /usr/local/bin/dep \
 && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /var/cache/*
 
 # php modules

@@ -10,17 +10,50 @@ RUN if [ $HTTP_PROXY ]; then pear config-set http_proxy $HTTP_PROXY; fi
 
 # Locales + common
 RUN apt-get update && apt-get install -y \
-		openssl \
 		git \
-		locales \
+		libbz2-dev \
 		libicu-dev \
+		locales \
+		openssl \
+        imagemagick \
+        libfreetype6-dev \
+        libgd-dev \
+        libjpeg62-turbo-dev \
+        libmagickwand-dev \
+        libmcrypt-dev \
+        libmemcached-dev \
+        libmemcached11 \
+        libpng12-dev \
+        libssl-dev \
+        libxml2-dev \
+        libxslt-dev \
+        zlib1g-dev \
+        zlib1g-dev \
 		&& dpkg-reconfigure locales \
 		&& locale-gen C.UTF-8 \
 		&& /usr/sbin/update-locale LANG=C.UTF-8 \
 		echo 'en_US.UTF-8 UTF-8' >> /etc/locale.gen \
 		&& locale-gen \
 		&& docker-php-ext-configure intl \
+		&& docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
 		&& docker-php-ext-install intl \
+		    dom \
+        	xsl \
+            bz2 \
+            gd \
+            gettext \
+            mcrypt \
+            zip \
+            exif \
+            ftp \
+            mbstring \
+            mysqli \
+            pdo \
+            pdo_mysql \
+            soap \
+            sysvshm \
+        && pecl install imagick  memcached-2.2.0 \
+        && docker-php-ext-enable imagick memcached \
 && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /var/cache/*
 
 # Composer + Deployer
@@ -34,54 +67,6 @@ RUN apt-get update && apt-get install -y \
         && chmod +x /usr/local/bin/dep \
 && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /var/cache/*
 
-# php modules
-RUN apt-get update && apt-get install -y \
-		libbz2-dev \
-		libssl-dev \
-		libxml2-dev \
-		libxslt-dev \
-        libmcrypt-dev \
-        zlib1g-dev \
-		&& docker-php-ext-install \
-			dom \
-			xsl \
-        	bz2 \
-        	gettext \
-        	mcrypt \
-        	zip \
-            ftp \
-            mbstring \
-            mysqli \
-            pdo \
-            pdo_mysql \
-            soap \
-            sysvshm \
-&& rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /var/cache/*
-
-# image modules
-RUN apt-get update && apt-get install -y \
-		libfreetype6-dev \
-		libjpeg62-turbo-dev \
-		libpng12-dev \
-		libgd-dev \
-		imagemagick \
-        libmagickwand-dev \
-		&& docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
-		&& docker-php-ext-install \
-			gd \
-			exif \
-		&& pecl install imagick \
-		&& docker-php-ext-enable imagick \
-&& rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /var/cache/*
-
-# Memcached
-RUN apt-get update && apt-get install -y \
-		libmemcached-dev \
-		libmemcached11 \
-		zlib1g-dev \
-		&& pecl install memcached-2.2.0 \
-        && docker-php-ext-enable memcached \
-&& rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /var/cache/*
 
 # JAVA
 RUN apt-get update && apt-get install -y \

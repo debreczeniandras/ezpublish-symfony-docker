@@ -62,7 +62,7 @@ RUN apt-get update && apt-get install -y \
         && curl -sS https://getcomposer.org/installer | php \
         && mv composer.phar /usr/local/bin/ \
         && ln -s /usr/local/bin/composer.phar /usr/local/bin/composer \
-        && curl -LO https://deployer.org/deployer.phar \
+        && curl -LO https://deployer.org/releases/v4.3.0/deployer.phar \
         && mv deployer.phar /usr/local/bin/dep \
         && chmod +x /usr/local/bin/dep \
 && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /var/cache/*
